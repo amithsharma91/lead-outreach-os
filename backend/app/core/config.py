@@ -151,7 +151,7 @@ class Settings:
             # 4. Built-in defaults
             return default
 
-        app_env = os.getenv("APP_ENV", "development")
+        app_env = str(pick("APP_ENV", "development"))
         if app_env not in SUPPORTED_ENVIRONMENTS:
             raise ValueError(
                 f"Unsupported APP_ENV={app_env!r}; supported values: "
