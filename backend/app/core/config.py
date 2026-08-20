@@ -188,7 +188,7 @@ class Settings:
         if cors_origins_env is not None:
             cors_origins = parse_cors_origins(cors_origins_env)
         elif cors_origins_dotenv is not None:
-            cors_origns = parse_cors_origins(cors_origins_dotenv)
+            cors_origins = parse_cors_origins(cors_origins_dotenv)
         elif cors_origins_file is not None:
             cors_origins = parse_cors_origins(cors_origins_file)
         else:
