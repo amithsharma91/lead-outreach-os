@@ -1,0 +1,9 @@
+{
+  "timezone": "Asia/Kolkata",
+  "outreach_start_time": "21:00",
+  "outreach_end_time": "23:00",
+  "daily_send_limit": 0,
+  "require_human_approval": true,
+  "ai_provider": "omniroute",
+  "messaging_provider": "none"
+}

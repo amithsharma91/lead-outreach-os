@@ -1,0 +1,46 @@
+# Lead Outreach OS — Phase 0
+# Local-first lead management system for freelance web-development business
+
+# Python backend
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Database
+data/*.db
+data/*.db-*
+data/backups/
+data/test/
+
+# Frontend
+frontend/node_modules/
+frontend/.vite/
+
+# Reports & exports
+data/exports/
+
+# Logs
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Test / tooling
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Frontend build output
+frontend/dist/
