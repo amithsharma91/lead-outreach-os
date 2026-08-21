@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface QueueCounts {
   queued: number
@@ -23,10 +24,11 @@ function MessageQueue() {
   const [counts, setCounts] = React.useState<QueueCounts | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [tick, setTick] = React.useState<TickReport | null>(null)
+  const api = useApiClient()
 
   async function load() {
     try {
-      const resp = await fetch('/api/queue/overview')
+      const resp = await api.get('/api/queue/overview')
       const data = await resp.json()
       setCounts(data.counts)
     } catch (e) {
@@ -38,11 +40,11 @@ function MessageQueue() {
 
   React.useEffect(() => {
     load()
-  }, [])
+  }, [api])
 
   async function runTick() {
     try {
-      const resp = await fetch('/api/queue/tick', { method: 'POST' })
+      const resp = await api.post('/api/queue/tick')
       const data = await resp.json()
       setTick(data)
       await load()

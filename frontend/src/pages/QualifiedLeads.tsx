@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface QualifiedLead {
   id: number
@@ -15,11 +16,12 @@ interface QualifiedLead {
 function QualifiedLeads() {
   const [leads, setLeads] = React.useState<QualifiedLead[]>([])
   const [loading, setLoading] = React.useState(true)
+  const api = useApiClient()
 
   React.useEffect(() => {
     async function fetchLeads() {
       try {
-        const resp = await fetch('/api/qualified-leads')
+        const resp = await api.get('/api/qualified-leads')
         const data = await resp.json()
         setLeads(Array.isArray(data) ? data : [])
       } catch (e) {
@@ -29,7 +31,7 @@ function QualifiedLeads() {
       }
     }
     fetchLeads()
-  }, [])
+  }, [api])
 
   if (loading) {
     return <div className="p-8">Loading qualified leads...</div>

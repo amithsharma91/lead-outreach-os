@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface Reply {
   id: number
@@ -14,11 +15,12 @@ interface Reply {
 function Replies() {
   const [replies, setReplies] = React.useState<Reply[]>([])
   const [loading, setLoading] = React.useState(true)
+  const api = useApiClient()
 
   React.useEffect(() => {
     async function fetchReplies() {
       try {
-        const resp = await fetch('/api/replies')
+        const resp = await api.get('/api/replies')
         const data = await resp.json()
         setReplies(Array.isArray(data) ? data : [])
       } catch (e) {
@@ -28,7 +30,7 @@ function Replies() {
       }
     }
     fetchReplies()
-  }, [])
+  }, [api])
 
   if (loading) {
     return <div className="p-8">Loading replies...</div>

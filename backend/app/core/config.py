@@ -202,22 +202,28 @@ class Settings:
                 "CORS_ORIGINS must not contain '*' while CORS_ALLOW_CREDENTIALS is enabled "
                 "(unsafe wildcard + credentials combination)"
             )
-        # Production must have explicit CORS_ORIGINS (either from env or .env, but not from settings.json?
-        # According to the requirement: production must not inherit the development default silently.
-        # We consider explicit if either env or dotenv (non-test) provides a value.
-        # However, note: in production, dotenv_settings is loaded (unless we are in test, but production != test).
-        # So we check: if app_env == "production" and no explicit value from env or dotenv, then error.
-        if app_env == "production" and cors_origins_env is None and cors_origins_dotenv is None:
-            raise RuntimeError(
-                "CORS_ORIGINS must be set explicitly in production; refusing to inherit "
-                "the development default silently"
-            )
-        # Production auth safety: if auth enabled, token must be non-empty
-        if app_env == "production" and api_auth_enabled and not api_auth_token:
-            raise RuntimeError(
-                "API_AUTH_ENABLED=true in production requires API_AUTH_TOKEN to be set "
-                "(production refuses to boot with authentication enabled but no token)"
-            )
+        # --- Production configuration hardening ---
+        if app_env == "production":
+            # CORS_ORIGINS must come from the process environment (not .env or settings.json).
+            if cors_origins_env is None:
+                raise RuntimeError(
+                    "CORS_ORIGINS must be set explicitly in the process environment "
+                    "when APP_ENV=production"
+                )
+            # The development localhost origin must never be used in production.
+            if cors_origins == DEFAULT_CORS_ORIGINS:
+                raise RuntimeError(
+                    "CORS_ORIGINS must not use the development localhost origin "
+                    f"{DEFAULT_CORS_ORIGINS[0]!r} when APP_ENV=production"
+                )
+            # When auth is enabled the token must come from the process environment,
+            # not from .env or settings.json (prevents development secrets silently
+            # surviving into production).
+            if api_auth_enabled and os.getenv("API_AUTH_TOKEN") is None:
+                raise RuntimeError(
+                    "API_AUTH_TOKEN must be set in the process environment when "
+                    "APP_ENV=production and API_AUTH_ENABLED=true"
+                )
 
         return cls(
             app_env=app_env,

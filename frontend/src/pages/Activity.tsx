@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface ActivityEvent {
   id: number
@@ -11,11 +12,12 @@ interface ActivityEvent {
 function Activity() {
   const [events, setEvents] = React.useState<ActivityEvent[]>([])
   const [loading, setLoading] = React.useState(true)
+  const api = useApiClient()
 
   React.useEffect(() => {
     async function fetchEvents() {
       try {
-        const resp = await fetch('/api/activity')
+        const resp = await api.get('/api/activity')
         const data = await resp.json()
         setEvents(Array.isArray(data) ? data : [])
       } catch (e) {
@@ -25,7 +27,7 @@ function Activity() {
       }
     }
     fetchEvents()
-  }, [])
+  }, [api])
 
   if (loading) {
     return <div className="p-8">Loading activity...</div>

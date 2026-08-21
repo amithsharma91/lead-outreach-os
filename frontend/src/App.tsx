@@ -1,5 +1,7 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { useAuth } from './auth/AuthContext'
 import Layout from './components/Layout'
+import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Leads from './pages/Leads'
 import QualifiedLeads from './pages/QualifiedLeads'
@@ -12,12 +14,26 @@ import Analytics from './pages/Analytics'
 import Activity from './pages/Activity'
 import Settings from './pages/Settings'
 
+function ProtectedLayout() {
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <Layout />
+}
+
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <Login />,
+  },
+  {
     path: '/',
-    element: <Layout />,
+    element: <ProtectedLayout />,
     children: [
-      { index: true, element: <Dashboard /> },
+      { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'leads', element: <Leads /> },
       { path: 'qualified-leads', element: <QualifiedLeads /> },

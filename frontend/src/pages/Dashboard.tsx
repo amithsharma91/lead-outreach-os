@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface DashboardStats {
   total_leads: number
@@ -13,11 +14,12 @@ interface DashboardStats {
 function Dashboard() {
   const [stats, setStats] = React.useState<DashboardStats | null>(null)
   const [loading, setLoading] = React.useState(true)
+  const api = useApiClient()
 
   React.useEffect(() => {
     async function fetchStats() {
       try {
-        const resp = await fetch('/api/dashboard')
+        const resp = await api.get('/api/dashboard')
         const data = await resp.json()
         setStats(data)
       } catch (e) {
@@ -27,7 +29,7 @@ function Dashboard() {
       }
     }
     fetchStats()
-  }, [])
+  }, [api])
 
   if (loading) {
     return <div className="p-8">Loading dashboard...</div>

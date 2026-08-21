@@ -109,7 +109,7 @@ class TestProductionAuthConfig:
     def test_production_enabled_without_token_fails_safely(self, monkeypatch):
         monkeypatch.setenv("APP_ENV", "production")
         monkeypatch.setenv("API_AUTH_ENABLED", "true")
-        monkeypatch.setenv("CORS_ORIGINS", "http://localhost:5173")
+        monkeypatch.setenv("CORS_ORIGINS", "https://production.example.com")
         monkeypatch.delenv("API_AUTH_TOKEN", raising=False)
         # Ensure .env file does not interfere with the test
         monkeypatch.setattr("app.core.config._load_dotenv", lambda: {})
@@ -120,7 +120,7 @@ class TestProductionAuthConfig:
         monkeypatch.setenv("APP_ENV", "production")
         monkeypatch.setenv("API_AUTH_ENABLED", "true")
         monkeypatch.setenv("API_AUTH_TOKEN", "prod-token")
-        monkeypatch.setenv("CORS_ORIGINS", "http://localhost:5173")
+        monkeypatch.setenv("CORS_ORIGINS", "https://production.example.com")
         s = Settings.from_env()
         assert s.api_auth_enabled is True
         assert s.api_auth_token == "prod-token"
@@ -194,6 +194,7 @@ class TestCors:
     def test_production_explicit_origins_ok(self, monkeypatch):
         monkeypatch.setenv("APP_ENV", "production")
         monkeypatch.setenv("CORS_ORIGINS", "https://app.example.com,https://dash.example.com")
+        monkeypatch.setattr("app.core.config._load_dotenv", lambda: {})
         s = Settings.from_env()
         assert s.cors_origins == ("https://app.example.com", "https://dash.example.com")
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface Overview {
   template: string
@@ -22,10 +23,11 @@ function FollowUps() {
   const [loading, setLoading] = React.useState(true)
   const [running, setRunning] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const api = useApiClient()
 
   async function load() {
     try {
-      const resp = await fetch('/api/follow-ups/overview')
+      const resp = await api.get('/api/follow-ups/overview')
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
       setOverview(await resp.json())
     } catch (e) {
@@ -38,13 +40,13 @@ function FollowUps() {
 
   React.useEffect(() => {
     load()
-  }, [])
+  }, [api])
 
   async function run() {
     setRunning(true)
     setError(null)
     try {
-      const resp = await fetch('/api/follow-ups/run', { method: 'POST' })
+      const resp = await api.post('/api/follow-ups/run')
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
       setReport(await resp.json())
       await load()

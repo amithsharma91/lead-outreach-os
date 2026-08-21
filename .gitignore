@@ -1,46 +1,37 @@
-# Lead Outreach OS — Phase 0
-# Local-first lead management system for freelance web-development business
+# Lead Outreach OS — gitignore
+#
+# Environment files — never commit real credentials
+.env
+.env.local
+.env.*.local
 
-# Python backend
-.venv/
+# Production database files
+*.db
+*.sqlite
+*.db-journal
+*.db-wal
+
+# Log files
+*.log
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
-
-# Environment / secrets
-.env
-.env.*
-!.env.example
-
-# Database
-data/*.db
-data/*.db-*
-data/backups/
-data/test/
+*~
+.pytest_cache/
+.hypothesis/
+venv/
+env/
+.venv/
 
 # Frontend
-frontend/node_modules/
-frontend/.vite/
-
-# Reports & exports
-data/exports/
-
-# Logs
-logs/
+node_modules/
+dist/
+*.orig
 
 # IDE
 .vscode/
 .idea/
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Test / tooling
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Frontend build output
-frontend/dist/
+# Local application data
+data/

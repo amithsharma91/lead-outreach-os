@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface Campaign {
   id: number
@@ -13,11 +14,12 @@ interface Campaign {
 function Campaigns() {
   const [campaigns, setCampaigns] = React.useState<Campaign[]>([])
   const [loading, setLoading] = React.useState(true)
+  const api = useApiClient()
 
   React.useEffect(() => {
     async function fetchCampaigns() {
       try {
-        const resp = await fetch('/api/campaigns')
+        const resp = await api.get('/api/campaigns')
         const data = await resp.json()
         setCampaigns(Array.isArray(data) ? data : [])
       } catch (e) {
@@ -27,7 +29,7 @@ function Campaigns() {
       }
     }
     fetchCampaigns()
-  }, [])
+  }, [api])
 
   if (loading) {
     return <div className="p-8">Loading campaigns...</div>

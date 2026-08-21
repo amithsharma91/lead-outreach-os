@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface PendingMessage {
   id: number
@@ -22,10 +23,11 @@ function Approvals() {
   const [data, setData] = React.useState<PendingResponse>({ count: 0, messages: [] })
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+  const api = useApiClient()
 
   async function load() {
     try {
-      const resp = await fetch('/api/messages/pending-approval')
+      const resp = await api.get('/api/messages/pending-approval')
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
       setData(await resp.json())
     } catch (e) {
@@ -38,16 +40,12 @@ function Approvals() {
 
   React.useEffect(() => {
     load()
-  }, [])
+  }, [api])
 
   async function act(messageId: number, path: string, body: object) {
     setError(null)
     try {
-      const resp = await fetch(`/api/messages/${messageId}/${path}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
+      const resp = await api.post(`/api/messages/${messageId}/${path}`, body)
       if (!resp.ok) {
         const detail = await resp.json().catch(() => null)
         throw new Error(detail?.detail || `HTTP ${resp.status}`)

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useApiClient } from '../lib/api'
 
 interface AnalyticsData {
   leads: {
@@ -46,11 +47,12 @@ interface AnalyticsData {
 function Analytics() {
   const [data, setData] = React.useState<AnalyticsData | null>(null)
   const [loading, setLoading] = React.useState(true)
+  const api = useApiClient()
 
   React.useEffect(() => {
     async function fetchAnalytics() {
       try {
-        const resp = await fetch('/api/analytics/overview')
+        const resp = await api.get('/api/analytics/overview')
         const payload = await resp.json()
         setData(payload)
       } catch (e) {
@@ -60,7 +62,7 @@ function Analytics() {
       }
     }
     fetchAnalytics()
-  }, [])
+  }, [api])
 
   if (loading) {
     return <div className="p-8">Loading analytics...</div>
