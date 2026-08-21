@@ -49,10 +49,14 @@ def list_replies(
 
 @router.post("/replies", response_model=ReplyOut)
 def create_reply(payload: ReplyCreate, db: Session = Depends(get_db)) -> Reply:
+    # Resolve Lead by integer primary key (Lead.id) from the API payload.
+    lead = db.execute(select(Lead).where(Lead.id == payload.lead_id)).scalar_one_or_none()
+    if lead is None:
+        raise HTTPException(status_code=404, detail=f"Lead {payload.lead_id} not found")
     try:
         return record_reply(
             db,
-            lead_id=payload.lead_id,
+            lead_id=lead.lead_id,
             reply_text=payload.reply_text,
             channel=payload.channel,
             message_id=payload.message_id,

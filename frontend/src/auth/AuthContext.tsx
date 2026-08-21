@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react'
+import { getApiBaseUrl } from '../lib/api'
 
 type AuthContextValue = {
   token: string | null
@@ -19,7 +20,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return false
     }
 
-    const response = await fetch('/api/leads', {
+    const base = getApiBaseUrl()
+    const response = await fetch(`${base}/leads`, {
       headers: {
         Authorization: `Bearer ${normalized}`,
       },

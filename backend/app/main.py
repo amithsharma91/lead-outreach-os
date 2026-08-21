@@ -39,12 +39,14 @@ async def lifespan(app: FastAPI):
     # Production startup connects to the existing database and NEVER
     # destroys data; destructive schema resets are confined to test setup.
     ensure_schema()
-    start_scheduler()
+    if settings.scheduler_enabled:
+        start_scheduler()
     logger.info("startup complete env=%s db=%s", settings.app_env, settings.database_url)
     try:
         yield
     finally:
-        stop_scheduler()
+        if settings.scheduler_enabled:
+            stop_scheduler()
 
 
 app = FastAPI(
@@ -113,11 +115,14 @@ app.include_router(
 
 @app.get("/", include_in_schema=False)
 async def serve_frontend_root():
-    """Serve the production SPA entrypoint."""
+    """Serve the production SPA entrypoint.
+
+    Returns 404 when the frontend build is not present (API-only deployment).
+    """
+    from fastapi import HTTPException
+
     if not FRONTEND_INDEX.is_file():
-        raise RuntimeError(
-            "Frontend build not found. Run `npm run build` in frontend/."
-        )
+        raise HTTPException(status_code=404, detail="Frontend not available")
     return FileResponse(FRONTEND_INDEX)
 
 
@@ -126,11 +131,11 @@ async def serve_frontend(path: str):
     """Serve static frontend assets and provide SPA route fallback.
 
     API routes are registered above and therefore remain handled by FastAPI.
+    Returns 404 when the frontend build is not present.
     """
-    if path.startswith("api/"):
-        # This should only be reached for an unknown API route.
-        from fastapi import HTTPException
+    from fastapi import HTTPException
 
+    if path.startswith("api/"):
         raise HTTPException(status_code=404, detail="Not found")
 
     requested = FRONTEND_DIST / path
@@ -139,17 +144,13 @@ async def serve_frontend(path: str):
     try:
         requested.resolve().relative_to(FRONTEND_DIST.resolve())
     except ValueError:
-        from fastapi import HTTPException
-
         raise HTTPException(status_code=404, detail="Not found") from None
 
     if requested.is_file():
         return FileResponse(requested)
 
     if not FRONTEND_INDEX.is_file():
-        raise RuntimeError(
-            "Frontend build not found. Run `npm run build` in frontend/."
-        )
+        raise HTTPException(status_code=404, detail="Frontend not available")
 
     # React Router client-side route fallback.
     return FileResponse(FRONTEND_INDEX)

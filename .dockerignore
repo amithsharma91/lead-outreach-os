@@ -1,0 +1,53 @@
+# Lead Outreach OS — Docker ignore
+#
+# Exclude files that should NOT be in the Docker build context.
+
+# Version control
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Data and logs
+data/
+logs/
+*.db
+*.sqlite
+*.db-journal
+*.db-wal
+
+# Environment files (never bake secrets into image)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation
+*.md
+docs/
+PHASE3_AUDIT.md
+PR-C_REPAIR_SUMMARY.md
+
+# Scripts (not needed in container)
+scripts/
+
+# Config overrides (use env vars instead)
+config/settings.json
+
+# Test files
+backend/tests/
+backend/pytest.ini

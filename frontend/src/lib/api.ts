@@ -1,11 +1,25 @@
 import React from 'react'
 import { useAuth } from '../auth/AuthContext'
 
+/**
+ * Resolve the API base URL from the VITE_API_BASE_URL environment variable.
+ * In development the Vite dev-server proxy handles /api routing, so the
+ * default "/api" works. In production the frontend is a separate static
+ * site and must know the backend origin — set VITE_API_BASE_URL to the
+ * full backend URL (e.g. "https://your-app.railway.app/api").
+ */
+export function getApiBaseUrl(): string {
+  return (import.meta as any).env?.VITE_API_BASE_URL ?? '/api'
+}
+
 export function createApiClient(token: string) {
+  const base = getApiBaseUrl()
+
   const request = async (
     input: string,
     init: RequestInit = {},
   ): Promise<Response> => {
+    const url = `${base}${input}`
     const headers = new Headers(init.headers)
 
     headers.set('Authorization', `Bearer ${token}`)
@@ -14,7 +28,7 @@ export function createApiClient(token: string) {
       headers.set('Content-Type', 'application/json')
     }
 
-    return fetch(input, {
+    return fetch(url, {
       ...init,
       headers,
     })
