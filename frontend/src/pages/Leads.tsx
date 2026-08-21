@@ -22,7 +22,7 @@ function Leads() {
       try {
         const resp = await api.get('/api/leads')
         const data = await resp.json()
-        setLeads(data.leads || [])
+        setLeads(data.items || [])
       } catch (e) {
         console.error(e)
       } finally {
